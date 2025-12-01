@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model DesignSystem {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  figmaFileId String   @unique
+  components  Component[]
+  colors      Color[]
+  typography  Typography[]
+  analyses    Analysis[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Component {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  figmaId         String
+  type            String
+  properties      Json?
+  designSystemId  String       @db.ObjectId
+  designSystem    DesignSystem @relation(fields: [designSystemId], references: [id])
+  usages          ComponentUsage[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Color {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  value           String
+  type            String
+  designSystemId  String       @db.ObjectId
+  designSystem    DesignSystem @relation(fields: [designSystemId], references: [id])
+  usages          ColorUsage[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Typography {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  fontSize        String
+  fontFamily      String
+  fontWeight      String
+  lineHeight      String?
+  designSystemId  String       @db.ObjectId
+  designSystem    DesignSystem @relation(fields: [designSystemId], references: [id])
+  usages          TypographyUsage[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Analysis {
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  frameId         String
+  frameName       String
+  totalElements   Int
+  dsCompliantElements Int
+  compliancePercentage Float
+  componentUsages ComponentUsage[]
+  colorUsages     ColorUsage[]
+  typographyUsages TypographyUsage[]
+  designSystemId  String       @db.ObjectId
+  designSystem    DesignSystem @relation(fields: [designSystemId], references: [id])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model ComponentUsage {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  componentId String    @db.ObjectId
+  component   Component @relation(fields: [componentId], references: [id])
+  analysisId  String    @db.ObjectId
+  analysis    Analysis  @relation(fields: [analysisId], references: [id])
+  count       Int
+  isCompliant Boolean
+  createdAt   DateTime  @default(now())
+}
+
+model ColorUsage {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  colorId     String   @db.ObjectId
+  color       Color    @relation(fields: [colorId], references: [id])
+  analysisId  String   @db.ObjectId
+  analysis    Analysis @relation(fields: [analysisId], references: [id])
+  count       Int
+  isCompliant Boolean
+  createdAt   DateTime @default(now())
+}
+
+model TypographyUsage {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  typographyId String     @db.ObjectId
+  typography   Typography @relation(fields: [typographyId], references: [id])
+  analysisId   String     @db.ObjectId
+  analysis     Analysis   @relation(fields: [analysisId], references: [id])
+  count        Int
+  isCompliant  Boolean
+  createdAt    DateTime   @default(now())
+}

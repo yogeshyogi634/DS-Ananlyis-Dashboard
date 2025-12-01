@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Design System Analytics</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 16px;
+      background-color: #f8f9fa;
+      color: #333;
+      font-size: 14px;
+    }
+    
+    .container {
+      max-width: 100%;
+    }
+    
+    h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0 0 16px 0;
+      color: #1a1a1a;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .section h3 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: all 0.2s;
+    }
+    
+    .button-primary {
+      background-color: #3b82f6;
+      color: white;
+    }
+    
+    .button-primary:hover {
+      background-color: #2563eb;
+    }
+    
+    .button-primary:disabled {
+      background-color: #9ca3af;
+      cursor: not-allowed;
+    }
+    
+    .button-secondary {
+      background-color: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+    
+    .button-secondary:hover {
+      background-color: #e5e7eb;
+    }
+    
+    .select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    
+    .progress {
+      width: 100%;
+      height: 8px;
+      background-color: #e5e7eb;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: #3b82f6;
+      transition: width 0.3s ease;
+    }
+    
+    .compliance-score {
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+      margin: 16px 0;
+    }
+    
+    .score-good { color: #16a34a; }
+    .score-warning { color: #d97706; }
+    .score-poor { color: #dc2626; }
+    
+    .stat {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    
+    .stat-label {
+      color: #6b7280;
+    }
+    
+    .stat-value {
+      font-weight: 600;
+      color: #374151;
+    }
+    
+    .status {
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    
+    .status-info {
+      background-color: #dbeafe;
+      color: #1e40af;
+    }
+    
+    .status-success {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    
+    .status-error {
+      background-color: #fee2e2;
+      color: #dc2626;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 20px;
+    }
+    
+    .spinner {
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3b82f6;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .api-config {
+      margin-bottom: 16px;
+    }
+    
+    .input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    
+    .input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎨 Design System Analytics</h1>
+    
+    <div class="section api-config">
+      <h3>Configuration</h3>
+      <input 
+        type="text" 
+        class="input" 
+        id="apiUrl" 
+        placeholder="API URL (e.g., http://localhost:3001/api)"
+        value="http://localhost:3001/api"
+      >
+      <select class="select" id="designSystemSelect">
+        <option value="">Select Design System</option>
+      </select>
+    </div>
+    
+    <div class="section">
+      <h3>Analysis</h3>
+      <button class="button button-primary" id="analyzeFrame">
+        Analyze Selected Frame
+      </button>
+      <button class="button button-secondary" id="analyzeSelection">
+        Analyze Selection
+      </button>
+      <button class="button button-secondary" id="showAssets">
+        Show Design System Assets
+      </button>
+    </div>
+    
+    <div id="statusSection" class="hidden">
+      <div id="status" class="status status-info">Ready to analyze</div>
+    </div>
+    
+    <div id="loadingSection" class="hidden">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div>Analyzing design...</div>
+      </div>
+    </div>
+    
+    <div id="resultsSection" class="section hidden">
+      <h3>Results</h3>
+      <div id="complianceScore" class="compliance-score">--</div>
+      <div class="progress">
+        <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+      </div>
+      <div id="stats">
+        <div class="stat">
+          <span class="stat-label">Components Used:</span>
+          <span class="stat-value" id="componentsUsed">--</span>
+        </div>
+      </div>
+      <button class="button button-primary" id="sendResults" disabled>
+        Send to Dashboard
+      </button>
+    </div>
+    
+    <div id="assetsSection" class="section hidden">
+      <h3>Design System Assets</h3>
+      <div id="assetsList"></div>
+    </div>
+    
+    <div class="section">
+      <button class="button button-secondary" id="cancel">Close Plugin</button>
+    </div>
+  </div>
+
+  <script>
+    let currentAnalysis = null;
+    let selectedDesignSystem = null;
+    let apiUrl = 'http://localhost:3001/api';
+    
+    // DOM elements
+    const elements = {
+      analyzeFrame: document.getElementById('analyzeFrame'),
+      analyzeSelection: document.getElementById('analyzeSelection'),
+      showAssets: document.getElementById('showAssets'),
+      cancel: document.getElementById('cancel'),
+      sendResults: document.getElementById('sendResults'),
+      statusSection: document.getElementById('statusSection'),
+      status: document.getElementById('status'),
+      loadingSection: document.getElementById('loadingSection'),
+      resultsSection: document.getElementById('resultsSection'),
+      complianceScore: document.getElementById('complianceScore'),
+      progressBar: document.getElementById('progressBar'),
+      componentsUsed: document.getElementById('componentsUsed'),
+      designSystemSelect: document.getElementById('designSystemSelect'),
+      apiUrl: document.getElementById('apiUrl')
+    };
+    
+    // Event listeners
+    elements.analyzeFrame.addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'analyze-frame' } }, '*');
+    });
+    
+    elements.analyzeSelection.addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'analyze-selection' } }, '*');
+    });
+    
+    elements.showAssets.addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'show-design-system-assets' } }, '*');
+    });
+    
+    elements.cancel.addEventListener('click', () => {
+      parent.postMessage({ pluginMessage: { type: 'cancel' } }, '*');
+    });
+    
+    elements.sendResults.addEventListener('click', async () => {
+      if (currentAnalysis && selectedDesignSystem) {
+        await sendResultsToDashboard();
+      }
+    });
+    
+    elements.designSystemSelect.addEventListener('change', (e) => {
+      selectedDesignSystem = e.target.value;
+      updateSendButton();
+    });
+    
+    elements.apiUrl.addEventListener('change', (e) => {
+      apiUrl = e.target.value;
+    });
+    
+    // Message handler
+    window.onmessage = (event) => {
+      const { type, data, message } = event.data.pluginMessage;
+      
+      console.log('UI received message:', type, data);
+      
+      switch (type) {
+        case 'plugin-loaded':
+          showStatus('Plugin loaded successfully', 'success');
+          loadDesignSystems();
+          break;
+        case 'analysis-started':
+          showLoading();
+          break;
+        case 'analysis-complete':
+          hideLoading();
+          showResults(data);
+          break;
+        case 'error':
+          hideLoading();
+          showStatus(message, 'error');
+          break;
+        case 'design-systems-loaded':
+          populateDesignSystems(data);
+          break;
+        case 'design-system-assets-loaded':
+          showDesignSystemAssets(data);
+          break;
+        default:
+          console.log('Unknown message type:', type);
+      }
+    };
+    
+    function showStatus(message, type = 'info') {
+      elements.status.textContent = message;
+      elements.status.className = `status status-${type}`;
+      elements.statusSection.classList.remove('hidden');
+      
+      if (type === 'success' || type === 'error') {
+        setTimeout(() => {
+          elements.statusSection.classList.add('hidden');
+        }, 3000);
+      }
+    }
+    
+    function showLoading() {
+      elements.loadingSection.classList.remove('hidden');
+      elements.resultsSection.classList.add('hidden');
+      elements.analyzeFrame.disabled = true;
+      elements.analyzeSelection.disabled = true;
+    }
+    
+    function hideLoading() {
+      elements.loadingSection.classList.add('hidden');
+      elements.analyzeFrame.disabled = false;
+      elements.analyzeSelection.disabled = false;
+    }
+    
+    function showResults(data) {
+      currentAnalysis = data;
+      
+      const compliance = data.compliancePercentage || 0;
+      
+      elements.complianceScore.textContent = `${compliance.toFixed(1)}%`;
+      elements.complianceScore.className = `compliance-score ${
+        compliance >= 80 ? 'score-good' : 
+        compliance >= 60 ? 'score-warning' : 'score-poor'
+      }`;
+      
+      elements.progressBar.style.width = `${compliance}%`;
+      
+      // Count only unique design system components (not all instances)
+      const uniqueComponents = Object.values(data.componentUsages || {}).filter(comp => comp.isCompliant);
+      elements.componentsUsed.textContent = uniqueComponents.length;
+      
+      
+      elements.resultsSection.classList.remove('hidden');
+      updateSendButton();
+    }
+    
+    function updateSendButton() {
+      elements.sendResults.disabled = !(currentAnalysis && selectedDesignSystem);
+    }
+    
+    function populateDesignSystems(systems) {
+      elements.designSystemSelect.innerHTML = '<option value="">Select Design System</option>';
+      
+      systems.forEach(system => {
+        const option = document.createElement('option');
+        option.value = system.id;
+        option.textContent = system.name;
+        elements.designSystemSelect.appendChild(option);
+      });
+    }
+    
+    function loadDesignSystems() {
+      parent.postMessage({ pluginMessage: { type: 'get-design-systems' } }, '*');
+    }
+    
+    function showDesignSystemAssets(data) {
+      const assetsSection = document.getElementById('assetsSection');
+      const assetsList = document.getElementById('assetsList');
+      
+      let html = '';
+      
+      // Components
+      if (data.components && data.components.length > 0) {
+        html += '<h4>🧩 Components (' + data.components.length + ')</h4>';
+        html += '<div style="max-height: 150px; overflow-y: auto; margin-bottom: 16px;">';
+        data.components.forEach(comp => {
+          html += `<div style="padding: 4px 8px; margin: 2px 0; background: #f3f4f6; border-radius: 4px; font-size: 12px;">
+            <strong>${comp.name}</strong><br>
+            <span style="color: #666;">ID: ${comp.id}</span>
+            ${comp.key ? '<br><span style="color: #666;">Key: ' + comp.key + '</span>' : ''}
+          </div>`;
+        });
+        html += '</div>';
+      }
+      
+      // Component Sets
+      if (data.componentSets && data.componentSets.length > 0) {
+        html += '<h4>📦 Component Sets (' + data.componentSets.length + ')</h4>';
+        html += '<div style="max-height: 150px; overflow-y: auto; margin-bottom: 16px;">';
+        data.componentSets.forEach(compSet => {
+          html += `<div style="padding: 4px 8px; margin: 2px 0; background: #f3f4f6; border-radius: 4px; font-size: 12px;">
+            <strong>${compSet.name}</strong> (${compSet.childrenCount} variants)<br>
+            <span style="color: #666;">ID: ${compSet.id}</span>
+          </div>`;
+        });
+        html += '</div>';
+      }
+      
+      // Colors
+      if (data.colors && data.colors.length > 0) {
+        html += '<h4>🎨 Color Styles (' + data.colors.length + ')</h4>';
+        html += '<div style="max-height: 150px; overflow-y: auto; margin-bottom: 16px;">';
+        data.colors.forEach(color => {
+          html += `<div style="padding: 4px 8px; margin: 2px 0; background: #f3f4f6; border-radius: 4px; font-size: 12px;">
+            <strong>${color.name}</strong><br>
+            <span style="color: #666;">ID: ${color.id}</span>
+          </div>`;
+        });
+        html += '</div>';
+      }
+      
+      // Text Styles
+      if (data.textStyles && data.textStyles.length > 0) {
+        html += '<h4>📝 Text Styles (' + data.textStyles.length + ')</h4>';
+        html += '<div style="max-height: 150px; overflow-y: auto; margin-bottom: 16px;">';
+        data.textStyles.forEach(style => {
+          html += `<div style="padding: 4px 8px; margin: 2px 0; background: #f3f4f6; border-radius: 4px; font-size: 12px;">
+            <strong>${style.name}</strong><br>
+            <span style="color: #666;">ID: ${style.id}</span>
+          </div>`;
+        });
+        html += '</div>';
+      }
+      
+      if (html === '') {
+        html = '<p style="color: #666; text-align: center; padding: 20px;">No design system assets found in current file. Make sure you have the Elara Design System file open.</p>';
+      }
+      
+      assetsList.innerHTML = html;
+      assetsSection.classList.remove('hidden');
+      
+      // Hide other sections
+      document.getElementById('resultsSection').classList.add('hidden');
+    }
+    
+    async function sendResultsToDashboard() {
+      try {
+        elements.sendResults.disabled = true;
+        elements.sendResults.textContent = 'Sending...';
+        
+        const payload = {
+          designSystemId: selectedDesignSystem,
+          frameId: currentAnalysis.frameId,
+          frameName: currentAnalysis.frameName,
+          analysisData: {
+            componentUsages: Object.entries(currentAnalysis.componentUsages || {}).map(([id, data]) => ({
+              componentId: id,
+              count: data.count,
+              isCompliant: data.isCompliant
+            })),
+            colorUsages: Object.entries(currentAnalysis.colorUsages || {}).map(([id, data]) => ({
+              colorId: id,
+              count: data.count,
+              isCompliant: data.isCompliant
+            })),
+            typographyUsages: Object.entries(currentAnalysis.typographyUsages || {}).map(([id, data]) => ({
+              typographyId: id,
+              count: data.count,
+              isCompliant: data.isCompliant
+            }))
+          }
+        };
+        
+        const response = await fetch(`${apiUrl}/analysis`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        
+        if (response.ok) {
+          showStatus('Analysis sent to dashboard successfully!', 'success');
+          elements.sendResults.textContent = 'Send to Dashboard';
+        } else {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+      } catch (error) {
+        console.error('Error sending to dashboard:', error);
+        showStatus('Failed to send to dashboard. Check your API configuration.', 'error');
+        elements.sendResults.textContent = 'Send to Dashboard';
+      } finally {
+        elements.sendResults.disabled = false;
+      }
+    }
+    
+    // Initialize
+    showStatus('Ready to analyze design elements', 'info');
+  </script>
+</body>
+</html>
