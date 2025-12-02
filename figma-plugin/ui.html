@@ -496,6 +496,9 @@
           frameId: currentAnalysis.frameId,
           frameName: currentAnalysis.frameName,
           analysisData: {
+            totalElements: currentAnalysis.totalElements || 0,
+            dsCompliantElements: currentAnalysis.dsCompliantElements || 0,
+            compliancePercentage: currentAnalysis.compliancePercentage || 0,
             componentUsages: Object.entries(currentAnalysis.componentUsages || {}).map(([id, data]) => ({
               componentId: id,
               count: data.count,

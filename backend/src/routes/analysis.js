@@ -4,6 +4,9 @@ import { PrismaClient } from '@prisma/client';
 const router = express.Router();
 const prisma = new PrismaClient();
 
+// Temporary in-memory storage for analyses
+let analysesStorage = [];
+
 // Create new analysis from Figma plugin data
 router.post('/', async (req, res) => {
   try {
@@ -13,6 +16,13 @@ router.post('/', async (req, res) => {
       frameName, 
       analysisData 
     } = req.body;
+
+    console.log('Received analysis data:', {
+      designSystemId,
+      frameId,
+      frameName,
+      analysisData
+    });
 
     if (!designSystemId || !frameId || !frameName || !analysisData) {
       return res.status(400).json({ 
@@ -27,27 +37,33 @@ router.post('/', async (req, res) => {
       ? (dsCompliantElements / totalElements) * 100 
       : 0;
 
-    // Create analysis record
-    const analysis = await prisma.analysis.create({
-      data: {
-        frameId,
-        frameName,
-        totalElements,
-        dsCompliantElements,
-        compliancePercentage,
-        designSystemId
-      }
-    });
+    // Store in temporary in-memory storage and also return success response
+    const analysis = {
+      id: Date.now().toString(),
+      frameId,
+      frameName,
+      totalElements,
+      dsCompliantElements,
+      compliancePercentage,
+      designSystemId,
+      createdAt: new Date().toISOString()
+    };
+
+    // Store in temporary memory
+    analysesStorage.push(analysis);
+    
+    console.log('Stored analysis in memory:', analysis);
+    console.log('Total analyses in storage:', analysesStorage.length);
 
     res.status(201).json({ 
       success: true, 
       analysis,
-      message: 'Analysis created successfully' 
+      message: 'Analysis data received successfully (saved to logs for now)' 
     });
     
   } catch (error) {
-    console.error('Error creating analysis:', error);
-    res.status(500).json({ error: 'Failed to create analysis' });
+    console.error('Error processing analysis:', error);
+    res.status(500).json({ error: 'Failed to process analysis' });
   }
 });
 
@@ -80,21 +96,24 @@ router.get('/design-system/:designSystemId', async (req, res) => {
     const { designSystemId } = req.params;
     const { page = 1, limit = 10 } = req.query;
 
+    // Filter analyses from memory storage by design system
+    const filteredAnalyses = analysesStorage.filter(
+      analysis => analysis.designSystemId === designSystemId
+    );
+
+    // Sort by creation date (newest first)
+    filteredAnalyses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // Apply pagination
     const skip = (page - 1) * limit;
+    const paginatedAnalyses = filteredAnalyses.slice(skip, skip + parseInt(limit));
 
-    const analyses = await prisma.analysis.findMany({
-      where: { designSystemId },
-      skip: parseInt(skip),
-      take: parseInt(limit),
-      orderBy: { createdAt: 'desc' }
-    });
+    const total = filteredAnalyses.length;
 
-    const total = await prisma.analysis.count({
-      where: { designSystemId }
-    });
+    console.log(`Returning ${paginatedAnalyses.length} analyses for design system ${designSystemId}`);
 
     res.json({
-      analyses,
+      analyses: paginatedAnalyses,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -117,16 +136,11 @@ router.get('/metrics/:designSystemId', async (req, res) => {
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - parseInt(days));
 
-    // Get analyses within the date range
-    const analyses = await prisma.analysis.findMany({
-      where: {
-        designSystemId,
-        createdAt: {
-          gte: startDate
-        }
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    // Filter analyses from memory storage by design system and date range
+    const analyses = analysesStorage.filter(analysis => 
+      analysis.designSystemId === designSystemId &&
+      new Date(analysis.createdAt) >= startDate
+    );
 
     // Calculate metrics
     const totalAnalyses = analyses.length;
@@ -139,6 +153,8 @@ router.get('/metrics/:designSystemId', async (req, res) => {
       compliance: analysis.compliancePercentage,
       frameName: analysis.frameName
     }));
+
+    console.log(`Returning metrics for design system ${designSystemId}: ${totalAnalyses} analyses, ${avgCompliance}% avg compliance`);
 
     res.json({
       totalAnalyses,
@@ -160,15 +176,20 @@ router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
 
-    await prisma.analysis.delete({
-      where: { id }
-    });
+    // Find the analysis in memory storage
+    const analysisIndex = analysesStorage.findIndex(analysis => analysis.id === id);
+    
+    if (analysisIndex === -1) {
+      return res.status(404).json({ error: 'Analysis not found' });
+    }
+
+    // Remove from storage
+    analysesStorage.splice(analysisIndex, 1);
+    
+    console.log(`Deleted analysis ${id}. Remaining analyses: ${analysesStorage.length}`);
 
     res.status(204).send();
   } catch (error) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Analysis not found' });
-    }
     console.error('Error deleting analysis:', error);
     res.status(500).json({ error: 'Failed to delete analysis' });
   }

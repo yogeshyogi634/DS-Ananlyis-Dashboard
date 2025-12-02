@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import type { DesignSystem, AnalysisMetrics } from '../types/index';
-import { designSystemsApi, analysisApi } from '../services/api';
-import { BarChart3, Palette, FileText, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import type { DesignSystem, AnalysisMetrics } from "../types/index";
+import { designSystemsApi, analysisApi } from "../services/api";
+import { BarChart3, Palette, FileText, TrendingUp } from "lucide-react";
 
 const Dashboard: React.FC = () => {
   const [designSystems, setDesignSystems] = useState<DesignSystem[]>([]);
-  const [selectedSystem, setSelectedSystem] = useState<string>('');
+  const [selectedSystem, setSelectedSystem] = useState<string>("");
   const [metrics, setMetrics] = useState<AnalysisMetrics | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
         setSelectedSystem(systems[0].id);
       }
     } catch (error) {
-      console.error('Error fetching design systems:', error);
+      console.error("Error fetching design systems:", error);
     } finally {
       setLoading(false);
     }
@@ -39,13 +39,15 @@ const Dashboard: React.FC = () => {
       const metricsData = await analysisApi.getMetrics(systemId);
       setMetrics(metricsData);
     } catch (error) {
-      console.error('Error fetching metrics:', error);
+      console.error("Error fetching metrics:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const selectedSystemData = designSystems.find(ds => ds.id === selectedSystem);
+  const selectedSystemData = designSystems.find(
+    (ds) => ds.id === selectedSystem
+  );
 
   if (loading && designSystems.length === 0) {
     return (
@@ -62,7 +64,8 @@ const Dashboard: React.FC = () => {
           Design System Analytics Dashboard
         </h1>
         <p className="text-gray-600">
-          Monitor and analyze design system compliance across your Figma projects
+          Monitor and analyze design system compliance across your Figma
+          projects
         </p>
       </div>
 
@@ -202,7 +205,10 @@ const Dashboard: React.FC = () => {
                 </h3>
                 <div className="space-y-3">
                   {metrics.complianceOverTime.slice(0, 5).map((item, index) => (
-                    <div key={index} className="flex justify-between items-center">
+                    <div
+                      key={index}
+                      className="flex justify-between items-center"
+                    >
                       <div>
                         <div className="text-sm font-medium text-gray-900">
                           {item.frameName}
@@ -212,10 +218,15 @@ const Dashboard: React.FC = () => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className={`text-sm font-medium ${
-                          item.compliance >= 80 ? 'text-green-600' : 
-                          item.compliance >= 60 ? 'text-yellow-600' : 'text-red-600'
-                        }`}>
+                        <div
+                          className={`text-sm font-medium ${
+                            item.compliance >= 80
+                              ? "text-green-600"
+                              : item.compliance >= 60
+                              ? "text-yellow-600"
+                              : "text-red-600"
+                          }`}
+                        >
                           {item.compliance.toFixed(1)}%
                         </div>
                       </div>
