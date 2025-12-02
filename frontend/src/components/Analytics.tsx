@@ -16,6 +16,8 @@ const Analytics: React.FC = () => {
   const [metrics, setMetrics] = useState<AnalysisMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState(30);
+  const [lastAnalysisCount, setLastAnalysisCount] = useState(0);
+  const [newDataAvailable, setNewDataAvailable] = useState(false);
 
   useEffect(() => {
     fetchDesignSystems();
@@ -26,6 +28,33 @@ const Analytics: React.FC = () => {
       fetchAnalytics();
     }
   }, [selectedSystem, timeRange]);
+
+  // Auto-refresh analytics every 5 seconds to catch new data from Figma plugin
+  useEffect(() => {
+    if (!selectedSystem) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const analysesData = await analysisApi.getByDesignSystem(selectedSystem, { page: 1, limit: 10 });
+        const newAnalysisCount = analysesData.analyses?.length || 0;
+        
+        // If new analyses detected, refresh all data
+        if (newAnalysisCount > lastAnalysisCount) {
+          console.log(`New analyses detected: ${newAnalysisCount} vs ${lastAnalysisCount}`);
+          setNewDataAvailable(true);
+          setLastAnalysisCount(newAnalysisCount);
+          fetchAnalytics();
+          
+          // Hide notification after 3 seconds
+          setTimeout(() => setNewDataAvailable(false), 3000);
+        }
+      } catch (error) {
+        console.error("Error checking for new analyses:", error);
+      }
+    }, 3000); // Check every 3 seconds
+
+    return () => clearInterval(interval);
+  }, [selectedSystem, lastAnalysisCount]);
 
   const fetchDesignSystems = async () => {
     try {
@@ -53,6 +82,7 @@ const Analytics: React.FC = () => {
 
       setAnalyses(analysesData.analyses || []);
       setMetrics(metricsData);
+      setLastAnalysisCount(analysesData.analyses?.length || 0);
     } catch (error) {
       console.error("Error fetching analytics:", error);
     } finally {

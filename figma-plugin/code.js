@@ -168,7 +168,7 @@ async function analyzeFrameDirectChildren(frameNode, analysis) {
           // Check if this component is specifically from Elara Design System
           const hasKey = !!mainComponent.key;
           
-          // More specific detection for Elara Design System components
+          // More comprehensive detection for Elara Design System components
           let isFromElaraDesignSystem = false;
           
           if (hasKey) {
@@ -181,12 +181,18 @@ async function analyzeFrameDirectChildren(frameNode, analysis) {
                                   nameCheck.includes('dropdown') ||
                                   nameCheck.includes('button') ||
                                   nameCheck.includes('input') ||
+                                  nameCheck.includes('field') ||
+                                  nameCheck.includes('form') ||
+                                  nameCheck.includes('text') ||
                                   nameCheck.includes('label') ||
                                   nameCheck.includes('elara') ||
                                   nameCheck.includes('collapsed') ||
                                   nameCheck.includes('expanded') ||
                                   nameCheck.includes('master') ||
-                                  nameCheck.includes('state');
+                                  nameCheck.includes('state') ||
+                                  nameCheck.includes('primary') ||
+                                  nameCheck.includes('secondary') ||
+                                  nameCheck.includes('default');
             
             // Also check if we're in the Elara Design System file
             const inElaraFile = figma.root.name.toLowerCase().includes('elara');
@@ -243,7 +249,7 @@ async function traverseNode(node, analysis) {
         // Check if this component is specifically from Elara Design System
         const hasKey = !!mainComponent.key;
         
-        // More specific detection for Elara Design System components
+        // More comprehensive detection for Elara Design System components
         let isFromElaraDesignSystem = false;
         
         if (hasKey) {
@@ -256,12 +262,18 @@ async function traverseNode(node, analysis) {
                                 nameCheck.includes('dropdown') ||
                                 nameCheck.includes('button') ||
                                 nameCheck.includes('input') ||
+                                nameCheck.includes('field') ||
+                                nameCheck.includes('form') ||
+                                nameCheck.includes('text') ||
                                 nameCheck.includes('label') ||
                                 nameCheck.includes('elara') ||
                                 nameCheck.includes('collapsed') ||
                                 nameCheck.includes('expanded') ||
                                 nameCheck.includes('master') ||
-                                nameCheck.includes('state');
+                                nameCheck.includes('state') ||
+                                nameCheck.includes('primary') ||
+                                nameCheck.includes('secondary') ||
+                                nameCheck.includes('default');
           
           // Also check if we're in the Elara Design System file
           const inElaraFile = figma.root.name.toLowerCase().includes('elara');
