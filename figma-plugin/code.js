@@ -145,94 +145,6 @@ async function analyzeNode(node) {
   });
 }
 
-async function analyzeFrameDirectChildren(frameNode, analysis) {
-  console.log(`Analyzing frame: ${frameNode.name} with ${frameNode.children.length} direct children`);
-  
-  // Make sure design system cache is loaded
-  if (!designSystemCache.loaded) {
-    await loadDesignSystemData();
-  }
-  
-  for (const child of frameNode.children) {
-    if (child.type === 'INSTANCE' && child.visible !== false) {
-      // Always count this as a component for total count
-      analysis.totalElements++;
-      console.log(`Counting direct child component: ${child.name} (${child.type})`);
-      
-      try {
-        const mainComponent = await child.getMainComponentAsync();
-        if (mainComponent) {
-          const componentKey = mainComponent.key || mainComponent.id;
-          const componentName = mainComponent.name;
-          
-          // Check if this component is specifically from Elara Design System
-          const hasKey = !!mainComponent.key;
-          
-          // More comprehensive detection for Elara Design System components
-          let isFromElaraDesignSystem = false;
-          
-          if (hasKey) {
-            // Check if component name contains Elara-specific patterns
-            const nameCheck = componentName.toLowerCase();
-            const isElaraPattern = nameCheck.includes('sidebar') ||
-                                  nameCheck.includes('navbar') ||
-                                  nameCheck.includes('breadcrumb') ||
-                                  nameCheck.includes('radio') ||
-                                  nameCheck.includes('dropdown') ||
-                                  nameCheck.includes('button') ||
-                                  nameCheck.includes('input') ||
-                                  nameCheck.includes('field') ||
-                                  nameCheck.includes('form') ||
-                                  nameCheck.includes('text') ||
-                                  nameCheck.includes('label') ||
-                                  nameCheck.includes('elara') ||
-                                  nameCheck.includes('collapsed') ||
-                                  nameCheck.includes('expanded') ||
-                                  nameCheck.includes('master') ||
-                                  nameCheck.includes('state') ||
-                                  nameCheck.includes('primary') ||
-                                  nameCheck.includes('secondary') ||
-                                  nameCheck.includes('default');
-            
-            // Also check if we're in the Elara Design System file
-            const inElaraFile = figma.root.name.toLowerCase().includes('elara');
-            
-            // Component is from Elara if it matches patterns OR we're in the Elara file
-            isFromElaraDesignSystem = isElaraPattern || inElaraFile;
-          }
-          
-          const isFromDesignSystem = isFromElaraDesignSystem;
-          
-          console.log(`Analyzing: ${componentName}`);
-          console.log(`  - Has key: ${hasKey}`);
-          console.log(`  - Key: ${mainComponent.key}`);
-          console.log(`  - Pattern match: ${hasKey ? nameCheck.includes('sidebar') || nameCheck.includes('navbar') || nameCheck.includes('breadcrumb') || nameCheck.includes('radio') || nameCheck.includes('dropdown') : false}`);
-          console.log(`  - In Elara file: ${figma.root.name.toLowerCase().includes('elara')}`);
-          console.log(`  - Is Elara DS component: ${isFromDesignSystem}`);
-          
-          if (isFromDesignSystem) {
-            analysis.dsCompliantElements++;
-          }
-          
-          if (!analysis.componentUsages[componentKey]) {
-            analysis.componentUsages[componentKey] = {
-              name: componentName,
-              count: 0,
-              isCompliant: isFromDesignSystem
-            };
-          }
-          analysis.componentUsages[componentKey].count++;
-        }
-      } catch (error) {
-        console.log('Could not get main component for direct child:', error);
-      }
-    } else {
-      // For non-instance children, traverse normally to collect colors and typography
-      await traverseNodeForAssets(child, analysis);
-    }
-  }
-}
-
 async function traverseNode(node, analysis) {
   // Check if node is a component instance - this is what we use for compliance calculation
   if (node.type === 'INSTANCE') {
@@ -359,57 +271,6 @@ async function traverseNode(node, analysis) {
   if ('children' in node) {
     for (const child of node.children) {
       await traverseNode(child, analysis);
-    }
-  }
-}
-
-async function traverseNodeForAssets(node, analysis) {
-  // Only collect colors and typography, not components
-  if ('fills' in node && Array.isArray(node.fills)) {
-    for (const fill of node.fills) {
-      if (fill.type === 'SOLID') {
-        const colorKey = rgbToHex(fill.color);
-        
-        const hasStyleId = !!fill.styleId;
-        const hasDesignSystemStyle = hasStyleId && designSystemCache.loaded && designSystemCache.colors.has(fill.styleId);
-        const isFromDesignSystem = hasDesignSystemStyle || !!(fill.boundVariables && (fill.boundVariables.color || fill.boundVariables.opacity));
-        
-        if (!analysis.colorUsages[colorKey]) {
-          analysis.colorUsages[colorKey] = {
-            value: colorKey,
-            count: 0,
-            isCompliant: isFromDesignSystem
-          };
-        }
-        analysis.colorUsages[colorKey].count++;
-      }
-    }
-  }
-
-  if (node.type === 'TEXT') {
-    const textStyleKey = node.textStyleId || 'custom-text';
-    const hasTextStyleId = !!node.textStyleId;
-    const hasDesignSystemTextStyle = hasTextStyleId && designSystemCache.loaded && designSystemCache.textStyles.has(node.textStyleId);
-    const isFromDesignSystem = hasDesignSystemTextStyle;
-    
-    if (!analysis.typographyUsages[textStyleKey]) {
-      analysis.typographyUsages[textStyleKey] = {
-        styleId: textStyleKey,
-        fontSize: node.fontSize ? node.fontSize.toString() : 'mixed',
-        fontName: typeof node.fontName === 'object' ? 
-          `${node.fontName.family}-${node.fontName.style}` : 
-          'mixed',
-        count: 0,
-        isCompliant: isFromDesignSystem
-      };
-    }
-    analysis.typographyUsages[textStyleKey].count++;
-  }
-
-  // Recursively analyze children for assets only
-  if ('children' in node) {
-    for (const child of node.children) {
-      await traverseNodeForAssets(child, analysis);
     }
   }
 }
@@ -582,7 +443,7 @@ async function getAvailableDesignSystems() {
       type: 'design-systems-loaded',
       data: [
         {
-          id: '1',
+          id: '1',  // Use correct design system ID
           name: 'Elara Design System',
           figmaFileId: 'P3AoC4JoQOlEoKRRKhwGLx',
           componentsCount: designSystemCache.components.size,

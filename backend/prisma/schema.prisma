@@ -68,8 +68,9 @@ model Analysis {
   componentUsages ComponentUsage[]
   colorUsages     ColorUsage[]
   typographyUsages TypographyUsage[]
-  designSystemId  String       @db.ObjectId
-  designSystem    DesignSystem @relation(fields: [designSystemId], references: [id])
+  missingElements MissingElements?
+  designSystemId  String
+  designSystem    DesignSystem? @relation(fields: [designSystemId], references: [id])
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 }
@@ -105,4 +106,61 @@ model TypographyUsage {
   count        Int
   isCompliant  Boolean
   createdAt    DateTime   @default(now())
+}
+
+model MissingElements {
+  id                    String              @id @default(auto()) @map("_id") @db.ObjectId
+  analysisId            String              @unique @db.ObjectId
+  analysis              Analysis            @relation(fields: [analysisId], references: [id])
+  missingComponents     MissingComponent[]
+  missingColors         MissingColor[]
+  missingTypography     MissingTypography[]
+  nonCompliantElements  Json[]
+  suggestions           String[]
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+}
+
+model MissingComponent {
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  type              String?
+  count             Int            @default(1)
+  properties        Json?
+  missingElementsId String         @db.ObjectId
+  missingElements   MissingElements @relation(fields: [missingElementsId], references: [id])
+  createdAt         DateTime       @default(now())
+}
+
+model MissingColor {
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  name              String?
+  value             String
+  type              String?
+  count             Int            @default(1)
+  missingElementsId String         @db.ObjectId
+  missingElements   MissingElements @relation(fields: [missingElementsId], references: [id])
+  createdAt         DateTime       @default(now())
+}
+
+model MissingTypography {
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  fontFamily        String
+  fontSize          String
+  fontWeight        String
+  lineHeight        String?
+  count             Int            @default(1)
+  missingElementsId String         @db.ObjectId
+  missingElements   MissingElements @relation(fields: [missingElementsId], references: [id])
+  createdAt         DateTime       @default(now())
+}
+
+model TokenAssignment {
+  id                    String   @id @default(auto()) @map("_id") @db.ObjectId
+  missingElementType    String   // 'component', 'color', 'typography'
+  missingElementId      String   @db.ObjectId
+  designSystemTokenId   String   @db.ObjectId
+  assignedBy           String   @default("user")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 }

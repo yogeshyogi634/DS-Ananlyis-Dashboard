@@ -231,24 +231,24 @@
     <div id="loadingSection" class="hidden">
       <div class="loading">
         <div class="spinner"></div>
-        <div>Analyzing design...</div>
+        <div id="loadingMessage">Extracting elements...</div>
       </div>
     </div>
     
     <div id="resultsSection" class="section hidden">
-      <h3>Results</h3>
+      <h3>Extraction Results</h3>
       <div id="complianceScore" class="compliance-score">--</div>
       <div class="progress">
         <div id="progressBar" class="progress-bar" style="width: 0%"></div>
       </div>
       <div id="stats">
         <div class="stat">
-          <span class="stat-label">Components Used:</span>
+          <span class="stat-label">Elements Extracted:</span>
           <span class="stat-value" id="componentsUsed">--</span>
         </div>
       </div>
       <button class="button button-primary" id="sendResults" disabled>
-        Send to Dashboard
+        Send for Analysis
       </button>
     </div>
     
@@ -495,7 +495,9 @@
           designSystemId: selectedDesignSystem,
           frameId: currentAnalysis.frameId,
           frameName: currentAnalysis.frameName,
-          analysisData: {
+          figmaElements: currentAnalysis.figmaElements || [], // Send raw Figma elements for dynamic analysis
+          // Keep legacy format for backward compatibility
+          analysisData: currentAnalysis.analysisData || {
             totalElements: currentAnalysis.totalElements || 0,
             dsCompliantElements: currentAnalysis.dsCompliantElements || 0,
             compliancePercentage: currentAnalysis.compliancePercentage || 0,
@@ -513,9 +515,16 @@
               typographyId: id,
               count: data.count,
               isCompliant: data.isCompliant
-            }))
+            })),
+            missingComponents: currentAnalysis.missingComponents || [],
+            missingColors: currentAnalysis.missingColors || [],
+            missingTypography: currentAnalysis.missingTypography || [],
+            nonCompliantElements: currentAnalysis.nonCompliantElements || [],
+            suggestions: currentAnalysis.suggestions || []
           }
         };
+        
+        console.log('Sending payload to dashboard:', JSON.stringify(payload, null, 2));
         
         const response = await fetch(`${apiUrl}/analysis`, {
           method: 'POST',
@@ -529,7 +538,9 @@
           showStatus('Analysis sent to dashboard successfully!', 'success');
           elements.sendResults.textContent = 'Send to Dashboard';
         } else {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorData = await response.text();
+          console.error('Server error response:', errorData);
+          throw new Error(`HTTP error! status: ${response.status}, message: ${errorData}`);
         }
         
       } catch (error) {

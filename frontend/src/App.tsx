@@ -9,7 +9,8 @@ import {
 import Dashboard from "./components/Dashboard";
 import DesignSystems from "./components/DesignSystems";
 import Analytics from "./components/Analytics";
-import { BarChart3, Settings, Home, Palette } from "lucide-react";
+import MissingElementsPage from "./components/MissingElementsPage";
+import { BarChart3, Settings, Home, Palette, AlertTriangle } from "lucide-react";
 
 function Navigation() {
   const location = useLocation();
@@ -18,6 +19,7 @@ function Navigation() {
     { path: "/", label: "Dashboard", icon: Home },
     { path: "/design-systems", label: "Design Systems", icon: Palette },
     { path: "/analytics", label: "Analytics", icon: BarChart3 },
+    { path: "/missing-elements", label: "Missing Elements", icon: AlertTriangle },
   ];
 
   return (
@@ -62,6 +64,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/design-systems" element={<DesignSystems />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/missing-elements" element={<MissingElementsPage />} />
           </Routes>
         </div>
       </div>

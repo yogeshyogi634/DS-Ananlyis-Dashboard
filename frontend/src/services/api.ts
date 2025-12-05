@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { DesignSystem, Analysis, AnalysisMetrics } from '../types/index';
+import type { DesignSystem, Analysis, AnalysisMetrics, MissingElements, MissingElementsSummary, TokenAssignment, AssignTokenRequest, TokenSuggestion } from '../types/index';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
@@ -119,6 +119,53 @@ export const analysisApi = {
 
   delete: async (id: string): Promise<void> => {
     await api.delete(`/analysis/${id}`);
+  },
+
+  // Missing elements endpoints
+  getMissingElements: async (analysisId: string): Promise<MissingElements> => {
+    const response = await api.get(`/analysis/missing-elements/${analysisId}`);
+    return response.data;
+  },
+
+  getMissingElementsByDesignSystem: async (
+    designSystemId: string,
+    params?: { page?: number; limit?: number }
+  ) => {
+    const response = await api.get(`/analysis/missing-elements/design-system/${designSystemId}`, {
+      params,
+    });
+    return response.data;
+  },
+
+  getMissingElementsSummary: async (
+    designSystemId: string,
+    params?: { days?: number }
+  ): Promise<MissingElementsSummary> => {
+    const response = await api.get(`/analysis/missing-summary/${designSystemId}`, {
+      params,
+    });
+    return response.data;
+  },
+};
+
+export const tokenAssignmentApi = {
+  assignToken: async (assignment: AssignTokenRequest): Promise<TokenAssignment> => {
+    const response = await api.post('/token-assignments', assignment);
+    return response.data;
+  },
+  
+  getAssignments: async (designSystemId: string): Promise<TokenAssignment[]> => {
+    const response = await api.get(`/token-assignments/design-system/${designSystemId}`);
+    return response.data;
+  },
+  
+  removeAssignment: async (assignmentId: string): Promise<void> => {
+    await api.delete(`/token-assignments/${assignmentId}`);
+  },
+  
+  getSuggestions: async (missingElementId: string, elementType: 'component' | 'color' | 'typography'): Promise<TokenSuggestion[]> => {
+    const response = await api.get(`/token-assignments/suggestions/${missingElementId}?type=${elementType}`);
+    return response.data;
   },
 };
 

@@ -6,6 +6,7 @@ import { PrismaClient } from '@prisma/client';
 import designSystemRoutes from './routes/designSystem.js';
 import analysisRoutes from './routes/analysis.js';
 import figmaRoutes from './routes/figma.js';
+import tokenAssignmentRoutes from './routes/tokenAssignments.js';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use('/api/design-systems', designSystemRoutes);
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/figma', figmaRoutes);
+app.use('/api/token-assignments', tokenAssignmentRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
