@@ -1,0 +1,285 @@
+{
+  "$schema": "https://schemas.tokens.studio/$metadata.json",
+  "name": "Elara Design System",
+  "version": "1.0.0",
+  "component": {
+    "button": {
+      "name": "Button",
+      "type": "button",
+      "figmaId": "btn-1",
+      "variants": ["primary", "secondary", "tertiary", "ghost"],
+      "aliases": ["btn", "cta", "action-button"]
+    },
+    "input": {
+      "name": "Input Field",
+      "type": "input",
+      "figmaId": "input-1",
+      "variants": ["text", "password", "email", "search"],
+      "aliases": ["input", "textfield", "text-input", "form-field"]
+    },
+    "textarea": {
+      "name": "Textarea",
+      "type": "textarea",
+      "figmaId": "textarea-1",
+      "aliases": ["text-area", "multi-line-input"]
+    },
+    "checkbox": {
+      "name": "Checkbox",
+      "type": "checkbox",
+      "figmaId": "checkbox-1",
+      "aliases": ["check", "tick-box", "checkbox-input"]
+    },
+    "radio": {
+      "name": "Radio Button",
+      "type": "radio",
+      "figmaId": "radio-1",
+      "aliases": ["radio", "option-button", "radio-input"]
+    },
+    "select": {
+      "name": "Select Dropdown",
+      "type": "select",
+      "figmaId": "select-1",
+      "aliases": ["dropdown", "picker", "combo-box", "select-field"]
+    },
+    "card": {
+      "name": "Card",
+      "type": "container",
+      "figmaId": "card-1",
+      "aliases": ["panel", "tile", "card-container"]
+    },
+    "modal": {
+      "name": "Modal",
+      "type": "overlay",
+      "figmaId": "modal-1",
+      "aliases": ["dialog", "popup", "overlay"]
+    },
+    "tabs": {
+      "name": "Tabs",
+      "type": "navigation",
+      "figmaId": "tabs-1",
+      "aliases": ["tab-group", "tab-panel", "tabbed-interface"]
+    },
+    "table": {
+      "name": "Data Table",
+      "type": "data",
+      "figmaId": "table-1",
+      "aliases": ["table", "data-grid", "grid-table"]
+    }
+  },
+  "color": {
+    "primary": {
+      "name": "Primary Blue",
+      "value": "#0066cc",
+      "type": "primary",
+      "aliases": ["blue", "main", "brand", "primary-color"]
+    },
+    "primary-dark": {
+      "name": "Primary Blue Dark",
+      "value": "#004499",
+      "type": "primary",
+      "aliases": ["blue-dark", "primary-dark"]
+    },
+    "primary-light": {
+      "name": "Primary Blue Light",
+      "value": "#3388dd",
+      "type": "primary",
+      "aliases": ["blue-light", "primary-light"]
+    },
+    "success": {
+      "name": "Success Green",
+      "value": "#28a745",
+      "type": "status",
+      "aliases": ["green", "success", "positive"]
+    },
+    "warning": {
+      "name": "Warning Orange",
+      "value": "#ffc107",
+      "type": "status",
+      "aliases": ["orange", "warning", "caution"]
+    },
+    "error": {
+      "name": "Error Red",
+      "value": "#dc3545",
+      "type": "status",
+      "aliases": ["red", "error", "danger", "negative"]
+    },
+    "white": {
+      "name": "White",
+      "value": "#ffffff",
+      "type": "neutral",
+      "aliases": ["white", "background", "bg-white"]
+    },
+    "black": {
+      "name": "Black",
+      "value": "#000000",
+      "type": "neutral",
+      "aliases": ["black", "text", "text-black"]
+    },
+    "gray-50": {
+      "name": "Gray 50",
+      "value": "#fafbfc",
+      "type": "neutral",
+      "aliases": ["gray-50", "background-light", "bg-light"]
+    },
+    "gray-100": {
+      "name": "Gray 100",
+      "value": "#f8f9fa",
+      "type": "neutral",
+      "aliases": ["gray-100", "background-subtle"]
+    },
+    "gray-200": {
+      "name": "Gray 200",
+      "value": "#e1e4e8",
+      "type": "neutral",
+      "aliases": ["gray-200", "border", "border-light"]
+    },
+    "gray-300": {
+      "name": "Gray 300",
+      "value": "#d1d9e0",
+      "type": "neutral",
+      "aliases": ["gray-300", "border-medium"]
+    },
+    "gray-400": {
+      "name": "Gray 400",
+      "value": "#959da5",
+      "type": "neutral",
+      "aliases": ["gray-400", "text-muted", "text-secondary"]
+    },
+    "gray-500": {
+      "name": "Gray 500",
+      "value": "#6c757d",
+      "type": "neutral",
+      "aliases": ["gray-500", "text-medium"]
+    },
+    "gray-600": {
+      "name": "Gray 600",
+      "value": "#586069",
+      "type": "neutral",
+      "aliases": ["gray-600", "text-dark"]
+    },
+    "gray-700": {
+      "name": "Gray 700",
+      "value": "#444d56",
+      "type": "neutral",
+      "aliases": ["gray-700", "text-darker"]
+    },
+    "gray-800": {
+      "name": "Gray 800",
+      "value": "#343a40",
+      "type": "neutral",
+      "aliases": ["gray-800", "text-primary"]
+    },
+    "gray-900": {
+      "name": "Gray 900",
+      "value": "#24292e",
+      "type": "neutral",
+      "aliases": ["gray-900", "text-darkest"]
+    }
+  },
+  "typography": {
+    "display-large": {
+      "name": "Display Large",
+      "fontSize": "32px",
+      "fontFamily": "Inter",
+      "fontWeight": "700",
+      "lineHeight": "40px",
+      "aliases": ["display", "title", "hero"]
+    },
+    "heading-1": {
+      "name": "Heading 1",
+      "fontSize": "28px",
+      "fontFamily": "Inter",
+      "fontWeight": "600",
+      "lineHeight": "36px",
+      "aliases": ["h1", "heading-large"]
+    },
+    "heading-2": {
+      "name": "Heading 2",
+      "fontSize": "24px",
+      "fontFamily": "Inter",
+      "fontWeight": "600",
+      "lineHeight": "32px",
+      "aliases": ["h2", "heading-medium"]
+    },
+    "heading-3": {
+      "name": "Heading 3",
+      "fontSize": "20px",
+      "fontFamily": "Inter",
+      "fontWeight": "600",
+      "lineHeight": "28px",
+      "aliases": ["h3", "heading-small"]
+    },
+    "heading-4": {
+      "name": "Heading 4",
+      "fontSize": "18px",
+      "fontFamily": "Inter",
+      "fontWeight": "600",
+      "lineHeight": "24px",
+      "aliases": ["h4", "subheading"]
+    },
+    "body-large": {
+      "name": "Body Large",
+      "fontSize": "16px",
+      "fontFamily": "Inter",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "aliases": ["body-lg", "text-large", "paragraph-large"]
+    },
+    "body-medium": {
+      "name": "Body Medium",
+      "fontSize": "14px",
+      "fontFamily": "Inter",
+      "fontWeight": "400",
+      "lineHeight": "20px",
+      "aliases": ["body", "text-medium", "p", "paragraph"]
+    },
+    "body-small": {
+      "name": "Body Small",
+      "fontSize": "12px",
+      "fontFamily": "Inter",
+      "fontWeight": "400",
+      "lineHeight": "18px",
+      "aliases": ["body-sm", "text-small", "caption"]
+    },
+    "button-text": {
+      "name": "Button Text",
+      "fontSize": "14px",
+      "fontFamily": "Inter",
+      "fontWeight": "500",
+      "lineHeight": "20px",
+      "aliases": ["btn-text", "button", "button-label"]
+    },
+    "input-text": {
+      "name": "Input Text",
+      "fontSize": "14px",
+      "fontFamily": "Inter",
+      "fontWeight": "400",
+      "lineHeight": "20px",
+      "aliases": ["input", "field-text", "form-text"]
+    },
+    "label-text": {
+      "name": "Label Text",
+      "fontSize": "12px",
+      "fontFamily": "Inter",
+      "fontWeight": "500",
+      "lineHeight": "16px",
+      "aliases": ["label", "field-label", "form-label"]
+    },
+    "help-text": {
+      "name": "Help Text",
+      "fontSize": "11px",
+      "fontFamily": "Inter",
+      "fontWeight": "400",
+      "lineHeight": "16px",
+      "aliases": ["help", "hint", "caption", "helper-text"]
+    },
+    "code": {
+      "name": "Code Text",
+      "fontSize": "12px",
+      "fontFamily": "Monaco",
+      "fontWeight": "400",
+      "lineHeight": "18px",
+      "aliases": ["code", "monospace", "code-text"]
+    }
+  }
+}

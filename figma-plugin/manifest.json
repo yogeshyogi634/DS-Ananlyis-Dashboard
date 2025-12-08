@@ -1,0 +1,20 @@
+{
+  "name": "Design System Analytics",
+  "id": "1577176070715026590",
+  "api": "1.0.0",
+  "main": "code.js",
+  "ui": "ui.html",
+  "capabilities": ["inspect"],
+  "editorType": [
+    "figma",
+    "dev"
+  ],
+  "networkAccess": { 
+    "allowedDomains": [
+      "https://api.figma.com"
+    ],
+    "devAllowedDomains": [
+      "http://localhost:3001"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "Simple Test Plugin",
+  "id": "test-simple-123",
+  "api": "1.0.0",
+  "main": "test-simple.js",
+  "editorType": ["figma", "dev"]
+}

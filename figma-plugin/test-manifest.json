@@ -1,0 +1,7 @@
+{
+  "name": "Test Plugin",
+  "id": "1577176070715026590",
+  "api": "1.0.0",
+  "main": "test.js",
+  "editorType": ["figma", "dev"]
+}
